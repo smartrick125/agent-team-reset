@@ -1,5 +1,9 @@
 {
   "host": "codex",
+  "roster": "成员构成.md",
+  "transcripts": {"format": "codex", "dir": "~/.codex/sessions"},
+  "keep_history": 10,
+  "max_handoff_lines": 80,
   "members": [
     {"role": "Tutor", "title": "Tutor [学习指导]", "handoff": "handoffs/Tutor.md", "lifecycle": "task"},
     {"role": "Promoter", "title": "Promoter [推广]", "handoff": "handoffs/Promoter.md", "lifecycle": "persistent", "max_user_turns": 40}
