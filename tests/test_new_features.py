@@ -73,20 +73,37 @@ def check_codex_counts(root):
     assert rotate.codex_turns(sessions, 'C2') == 1
 
 
+def check_claude_generation_counts(root):
+    directory = root / 'claude-generations'
+    directory.mkdir()
+    title = 'Maintainer [维护]'
+    old = [dict(user(f'old-{index}', '旧代人工消息'), sessionId='old-thread') for index in range(30)]
+    new = [dict(user('new-1', '新代第一条'), sessionId='new-thread')]
+    write_jsonl(directory / 'old.jsonl', old + [{'customTitle': title}])
+    write_jsonl(directory / 'new.jsonl', new + [{'customTitle': title}])
+    write_jsonl(directory / 'new-resumed.jsonl', new + [{'customTitle': title}])
+    config = {'transcripts': {'format': 'claude', 'dir': str(directory)}}
+    member = {'title': title}
+    assert rotate.count_turns(config, member, 'old-thread') == 30
+    assert rotate.count_turns(config, member, 'new-thread') == 1
+    assert rotate.count_turns(config, member, 'unidentified-thread') is None
+
+
 def main():
     root = Path(tempfile.mkdtemp())
     check_codex_counts(root)
+    check_claude_generation_counts(root)
     claude_dir, codex_dir = root / 'claude', root / 'codex' / '2026' / '10'
     claude_dir.mkdir()
     codex_dir.mkdir(parents=True)
     # 续接的聊天会在新文件里重复旧消息；工具结果和系统提示不算用户消息。
-    first = [user('a', '一'), user('b', '二'), {'customTitle': 'Builder [维护]'}]
+    first = [dict(user('a', '一'), sessionId='T1'), dict(user('b', '二'), sessionId='T1'), {'customTitle': 'Builder [维护]'}]
     write_jsonl(claude_dir / 's1.jsonl', first)
     write_jsonl(claude_dir / 's2.jsonl', first + [
-        user('c', '三'), user('d', '<system-reminder>x'),
+        dict(user('c', '三'), sessionId='T1'), dict(user('d', '<system-reminder>x'), sessionId='T1'),
         {'type': 'user', 'uuid': 'e', 'message': {'content': [{'type': 'tool_result', 'content': 'ok'}]}},
         {'customTitle': 'Builder [维护]'}])
-    write_jsonl(claude_dir / 'other.jsonl', [user('z', '别人'), {'customTitle': 'Herald [推广]'}])
+    write_jsonl(claude_dir / 'other.jsonl', [dict(user('z', '别人'), sessionId='T2'), {'customTitle': 'Herald [推广]'}])
     write_jsonl(codex_dir / 'rollout-x-T2.jsonl', [{'type': 'event_msg', 'payload': {'type': 'task_started'}}] * 2)
 
     for name in ('Builder', 'Herald', 'Tutor'):

@@ -6,6 +6,7 @@
   "max_handoff_lines": 80,
   "members": [
     {"role": "Tutor", "title": "Tutor [学习指导]", "handoff": "handoffs/Tutor.md", "lifecycle": "task"},
-    {"role": "Promoter", "title": "Promoter [推广]", "handoff": "handoffs/Promoter.md", "lifecycle": "persistent", "max_user_turns": 40}
+    {"role": "Maintainer", "title": "Maintainer [维护]", "handoff": "handoffs/Maintainer.md", "lifecycle": "persistent", "persistent_class": "maintenance", "max_user_turns": 30},
+    {"role": "Promoter", "title": "Promoter [推广]", "handoff": "handoffs/Promoter.md", "lifecycle": "persistent", "persistent_class": "regular", "max_user_turns": 20}
   ]
 }

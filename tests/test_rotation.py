@@ -36,6 +36,8 @@ class RotationTests(unittest.TestCase):
         self.assertEqual([m['role'] for m in self.run_action('open-plan')], ['B'])
 
     def test_close_requires_all_handoffs(self):
+        self.assertEqual(self.run_action('close-plan'), [])
+        self.run_action('register', 'A', 'thread-A')
         with self.assertRaises(ValueError):
             self.run_action('close-plan')
         self.prepare()
