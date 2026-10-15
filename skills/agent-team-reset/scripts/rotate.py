@@ -4,6 +4,7 @@ import datetime
 import hashlib
 import json
 import os
+import stat
 import sys
 from pathlib import Path
 
@@ -87,7 +88,9 @@ def effective_limit(member):
 def ordinary_file(path):
     # Resolve only after checking every component, including Windows junctions.
     for part in (path, *path.parents):
-        if part.is_symlink() or part.is_junction():
+        info = part.lstat()
+        reparse = getattr(info, 'st_file_attributes', 0) & getattr(stat, 'FILE_ATTRIBUTE_REPARSE_POINT', 0x400)
+        if stat.S_ISLNK(info.st_mode) or reparse:
             raise ValueError(f'Links are not valid handoffs: {path}')
     if not path.is_file():
         raise ValueError(f'Handoff must be an existing regular file: {path}')
