@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.team-reset/
+handoffs/
+.env
+/team.json
+.validation/
